@@ -1,6 +1,7 @@
 // The connection to Nomie: the notes and the mood for the words and the tone, the timeline for saving, and storage.
 import { collage, DEFAULT_SETTINGS, type Settings } from './store.svelte';
 import { paletteFrom } from './palette';
+import { onPrefsChange } from './prefs-live';
 import { extractKeywords, mergeKeywords, type NoteLike } from './collage/keywords';
 import { CATEGORIES, fetchPictures, type Picture } from './collage/sources';
 import { TONES, TONE_IDS, toneForMood, type ToneId } from './collage/tone';
@@ -132,6 +133,7 @@ export const startCollage = () => {
     addToMoreMenu: true,
     addToWidgets: true,
   });
+  onPrefsChange(plugin, applyTheme);
   plugin.onRegistered(async () => {
     applyTheme();
     await plugin.storage.init();
