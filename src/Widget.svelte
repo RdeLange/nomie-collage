@@ -9,7 +9,7 @@
   const palette = $derived(TONES[collage.tone]);
 </script>
 
-<div class="widget" style="--bg: {palette.background}; --ink: {palette.ink}">
+<div class="widget" style="--bg: {palette.background}; --ink: {palette.ink}; --tint: {collage.palette.tint}; --card: {collage.palette.card}; --muted: {collage.palette.textSecondary};">
   <div class="widget-head">
     <span>🖼️ Collage</span>
     <span class="muted">{palette.label}</span>

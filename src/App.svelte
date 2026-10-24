@@ -48,7 +48,7 @@
 {#if collage.mode === 'widget'}
   <Widget />
 {:else}
-  <main class="page" class:dark data-tone={tone} style="--bg: {palette.background}; --ink: {palette.ink}">
+  <main class="page" class:dark data-tone={tone} style="--bg: {palette.background}; --ink: {palette.ink}; --tint: {collage.palette.tint}; --on-tint: {collage.palette.onTint}; --card: {collage.palette.card}; --fill: {collage.palette.fill}; --muted: {collage.palette.textSecondary}; --page-app: {collage.palette.page};">
     <header class="top">
       <h1>Collage</h1>
       <span class="muted">{palette.label} · {collage.pictures.length} pictures</span>

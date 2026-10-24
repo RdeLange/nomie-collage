@@ -1,6 +1,7 @@
 // The state of the collage: what you chose, the words, the pictures and the tone. Saved, so the widget can show it.
 import type { CategoryId, Picture, SourceChoice } from './collage/sources';
 import type { ToneId } from './collage/tone';
+import { paletteFrom, type Palette } from './palette';
 
 export type Choice = ToneId | 'auto';
 
@@ -36,6 +37,8 @@ class CollageState {
   message = $state('');
   mode = $state<'modal' | 'widget'>('modal');
   theme = $state<'light' | 'dark'>('light');
+  // the app's colours for buttons, cards and text; the collage's own tone colours are used for the picture board
+  palette = $state<Palette>(paletteFrom(undefined));
   ready = $state(false);
 }
 

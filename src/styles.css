@@ -25,7 +25,7 @@ html, body { margin: 0; background: var(--bg); color: var(--ink); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: var(--bg); font-size: 15px; }
 .x { border: 0; background: transparent; color: var(--muted); font-size: 16px; cursor: pointer; }
-.input { flex: 1; min-width: 0; border: 1px solid #c7c7cc; border-radius: 10px; padding: 9px 12px; font-size: 16px; background: var(--card); color: var(--ink); }
+.input { flex: 1; min-width: 0; border: 1px solid var(--muted); border-radius: 10px; padding: 9px 12px; font-size: 16px; background: var(--card); color: var(--ink); }
 .btn { border: 0; border-radius: 10px; padding: 9px 14px; font-size: 15px; font-weight: 600; background: #e5e5ea; color: var(--ink); cursor: pointer; }
 .btn.primary { background: var(--tint); color: #fff; }
 .btn:disabled { opacity: 0.45; cursor: default; }
