@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { extractKeywords, mergeKeywords } from '../collage/keywords';
 import { TONES, toneForMood } from '../collage/tone';
 import { CATEGORIES, fetchPictures, normaliseCommons, normaliseOpenverse, openverseUrl, searchText } from '../collage/sources';
-import { seededRandom, shuffle, splitCount, uniqueBySource } from '../collage/layout';
+import { FACE_SHARE, faceCountFor, mixPictures, seededRandom, shuffle, splitCount, uniqueBySource } from '../collage/layout';
 
 describe('keywords from the notes', () => {
   it('uses the full text of the notes, and skips stop words and short words', () => {
@@ -46,10 +46,10 @@ describe('tones', () => {
     expect(toneForMood(undefined)).toBeUndefined();
   });
 
-  it('gives every tone search words and a colour', () => {
+  it('gives every tone search words and a face to search for', () => {
     for (const tone of Object.values(TONES)) {
       expect(tone.words.length).toBeGreaterThan(3);
-      expect(tone.background).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(tone.face).toMatch(/face/);
     }
   });
 });
@@ -117,5 +117,28 @@ describe('layout', () => {
 
   it('removes the same picture when two words find it', () => {
     expect(uniqueBySource([{ src: 'a' }, { src: 'b' }, { src: 'a' }])).toEqual([{ src: 'a' }, { src: 'b' }]);
+  });
+});
+
+describe('the face pictures', () => {
+  it('uses 20% of the pictures for faces, rounded', () => {
+    expect(FACE_SHARE).toBe(0.2);
+    expect(faceCountFor(12)).toBe(2);
+    expect(faceCountFor(24)).toBe(5);
+    expect(faceCountFor(36)).toBe(7);
+  });
+
+  it('mixes exactly the chosen number of pictures, with the face share from the faces', () => {
+    const faces = Array.from({ length: 10 }, (_, i) => ({ src: `f${i}` }));
+    const others = Array.from({ length: 30 }, (_, i) => ({ src: `o${i}` }));
+    const mixed = mixPictures(faces, others, 12, seededRandom(7));
+    expect(mixed).toHaveLength(12);
+    expect(mixed.filter((p) => p.src.startsWith('f'))).toHaveLength(2);
+  });
+
+  it('fills with word pictures when there are too few faces', () => {
+    const mixed = mixPictures([{ src: 'f0' }], Array.from({ length: 30 }, (_, i) => ({ src: `o${i}` })), 12, seededRandom(7));
+    expect(mixed).toHaveLength(12);
+    expect(mixed.filter((p) => p.src.startsWith('f'))).toHaveLength(1);
   });
 });

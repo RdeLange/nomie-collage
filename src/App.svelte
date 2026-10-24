@@ -16,7 +16,6 @@
 
   const tone = $derived(collage.settings.tone === 'auto' ? collage.tone : (collage.settings.tone as ToneId));
   const palette = $derived(TONES[tone]);
-  const dark = $derived(palette.background === '#1C1C1E' || collage.theme === 'dark');
 
   // Each tile gets its height from the seed, so the collage is not a plain grid
   const ratios = $derived.by(() => {
@@ -48,7 +47,7 @@
 {#if collage.mode === 'widget'}
   <Widget />
 {:else}
-  <main class="page" class:dark data-tone={tone} style="--bg: {palette.background}; --ink: {palette.ink}; --tint: {collage.palette.tint}; --on-tint: {collage.palette.onTint}; --card: {collage.palette.card}; --fill: {collage.palette.fill}; --muted: {collage.palette.textSecondary}; --page-app: {collage.palette.page};">
+  <main class="page" data-tone={tone} style="--bg: {collage.palette.page}; --ink: {collage.palette.text}; --tint: {collage.palette.tint}; --on-tint: {collage.palette.onTint}; --card: {collage.palette.card}; --fill: {collage.palette.fill}; --muted: {collage.palette.textSecondary}; --page-app: {collage.palette.page};">
     <header class="top">
       <h1>Collage</h1>
       <span class="muted">{palette.label} · {collage.pictures.length} pictures</span>

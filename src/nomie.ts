@@ -5,7 +5,7 @@ import { onPrefsChange } from './prefs-live';
 import { extractKeywords, mergeKeywords, type NoteLike } from './collage/keywords';
 import { CATEGORIES, fetchPictures, type Picture } from './collage/sources';
 import { TONES, TONE_IDS, toneForMood, type ToneId } from './collage/tone';
-import { seededRandom, shuffle, splitCount, uniqueBySource } from './collage/layout';
+import { faceCountFor, mixPictures, seededRandom, shuffle, splitCount, uniqueBySource } from './collage/layout';
 
 declare const NomiePlugin: any;
 
@@ -76,14 +76,17 @@ export const build = async (reshuffle = false) => {
     }
     collage.tone = await resolveTone(collage.settings.tone);
     if (!reshuffle) collage.seed = Math.floor(Math.random() * 1_000_000) + 1;
-    const counts = splitCount(collage.settings.count, words.length);
+    const total = collage.settings.count;
+    const faces = faceCountFor(total);
+    const counts = splitCount(total - faces, words.length);
     const toneWords = TONES[collage.tone].words;
-    const lists = await Promise.all(
-      words.map((word, i) => fetchPictures(word, toneWords, collage.settings.category, collage.settings.source, Math.max(counts[i] * 2, 4)))
-    );
+    const { category, source } = collage.settings;
+    const wordSearches = words.map((word, i) => fetchPictures(word, toneWords, category, source, Math.max(counts[i] * 2, 4)));
+    const faceSearch = fetchPictures(TONES[collage.tone].face, '', 'photos', source, Math.max(faces * 2, 4));
+    const [faceList, ...wordLists] = await Promise.all([faceSearch, ...wordSearches]);
     const random = seededRandom(collage.seed);
-    const pool = uniqueBySource(shuffle(lists.flat(), random));
-    collage.pictures = pool.slice(0, collage.settings.count);
+    const picked = mixPictures(uniqueBySource(shuffle(faceList, random)), uniqueBySource(shuffle(wordLists.flat(), random)), total, random);
+    collage.pictures = picked;
     collage.builtAt = new Date().toISOString();
     collage.status = collage.pictures.length ? 'ready' : 'error';
     collage.message = collage.pictures.length ? '' : 'No pictures were found for these words. Try other words, or another picture type.';

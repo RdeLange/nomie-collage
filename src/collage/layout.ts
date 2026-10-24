@@ -35,3 +35,17 @@ export const splitCount = (total: number, parts: number): number[] => {
 
 // The aspect ratio for each tile, so the collage looks like a collage and not a grid
 export const tileRatio = (random: () => number): number => [0.7, 1, 1.35, 0.85, 1.2][Math.floor(random() * 5)];
+
+// Share of the collage that shows faces with the chosen mood
+export const FACE_SHARE = 0.2;
+
+export const faceCountFor = (total: number): number => Math.round(total * FACE_SHARE);
+
+// The collage: the face pictures first (up to the face count), the rest from the words, then shuffled together.
+// When there are too few face pictures, the words fill the gap, so the collage always has the chosen number.
+export const mixPictures = <T extends { src: string }>(faces: T[], others: T[], total: number, random: () => number): T[] => {
+  const wantedFaces = faceCountFor(total);
+  const takenFaces = faces.slice(0, wantedFaces);
+  const takenOthers = others.slice(0, total - takenFaces.length);
+  return shuffle([...takenFaces, ...takenOthers], random);
+};
