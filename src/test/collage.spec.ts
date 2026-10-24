@@ -5,7 +5,7 @@ import { CATEGORIES, fetchPictures, normaliseCommons, normaliseOpenverse, openve
 import { seededRandom, shuffle, splitCount, uniqueBySource } from '../collage/layout';
 
 describe('keywords from the notes', () => {
-  it('counts tags more than words, and skips stop words and short words', () => {
+  it('uses the full text of the notes, and skips stop words and short words', () => {
     const notes = [
       { note: 'A long walk in the park #walk', elements: [{ type: 'tracker', id: 'walk' }] },
       { note: 'Walk with the dog and the sun', elements: [] },
@@ -14,8 +14,19 @@ describe('keywords from the notes', () => {
     const words = extractKeywords(notes, 8);
     expect(words[0]).toBe('walk');
     expect(words).toContain('sunshine');
+    expect(words).toContain('park');
     expect(words).not.toContain('the');
     expect(words).not.toContain('with');
+  });
+
+  it('counts a word in the text of every note, not only the trackers', () => {
+    const notes = [
+      { note: 'Sunshine on the lake', elements: [] },
+      { note: 'More sunshine today', elements: [] },
+      { note: '#coffee', elements: [{ type: 'tracker', id: 'coffee' }] },
+    ];
+    const words = extractKeywords(notes, 8);
+    expect(words.indexOf('sunshine')).toBeLessThan(words.indexOf('coffee'));
   });
 
   it('keeps the words a user removed out, and adds the ones they typed', () => {

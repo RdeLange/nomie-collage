@@ -11,22 +11,20 @@ const STOP = new Set([
   'het', 'een', 'and', 'dat', 'die', 'der', 'und', 'mit', 'ich', 'ist', 'nicht', 'auch', 'heute', 'voor', 'maar',
 ]);
 
-// Tags count more than words, because you chose them on purpose.
-const TAG_WEIGHT = 3;
-
+// The words a note is made of. The full text of every note counts, and a #tag is a word like the others,
+// so the words you write and the trackers you use both show up. Trackers that are not in the text count once too.
 export const extractKeywords = (notes: NoteLike[], limit = 6): string[] => {
   const counts = new Map<string, number>();
-  const add = (word: string, weight: number) => counts.set(word, (counts.get(word) ?? 0) + weight);
+  const add = (word: string) => counts.set(word, (counts.get(word) ?? 0) + 1);
 
   for (const note of notes) {
+    // the # and @ signs go, the words stay: "#walk" counts as "walk"
+    const text = note.note.replace(/[#@]/g, ' ').toLowerCase();
+    const words = text.split(/[^\p{L}]+/u).filter((word) => word.length >= 4 && !STOP.has(word));
+    words.forEach(add);
     for (const element of note.elements) {
-      if (element.type === 'tracker' && element.id) add(element.id.toLowerCase(), TAG_WEIGHT);
-    }
-    // the words of the note, without the #tags and the numbers
-    const text = note.note.replace(/[#@]\S+/g, ' ').toLowerCase();
-    for (const word of text.split(/[^\p{L}]+/u)) {
-      if (word.length < 4 || STOP.has(word)) continue;
-      add(word, 1);
+      const tag = (element.id || '').toLowerCase();
+      if (element.type === 'tracker' && tag.length >= 4 && !words.includes(tag) && !STOP.has(tag)) add(tag);
     }
   }
 

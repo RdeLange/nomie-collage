@@ -3,6 +3,9 @@
   import { TONES } from './collage/tone';
 
   const shown = $derived(collage.pictures.slice(0, 4));
+  // the grid fills the widget: one picture fills it, two sit side by side, three or four make a 2 by 2 grid
+  const columns = $derived(shown.length <= 1 ? 1 : 2);
+  const rows = $derived(Math.max(1, Math.ceil(shown.length / columns)));
   const palette = $derived(TONES[collage.tone]);
 </script>
 
@@ -12,7 +15,7 @@
     <span class="muted">{palette.label}</span>
   </div>
   {#if shown.length}
-    <div class="mini">
+    <div class="mini" style="grid-template-columns: repeat({columns}, 1fr); grid-template-rows: repeat({rows}, 1fr);">
       {#each shown as picture (picture.id)}
         <img src={picture.thumb} alt={picture.title} style="filter: {palette.filter}" />
       {/each}
